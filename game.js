@@ -3,6 +3,23 @@ var height = 0;
 
 var shamblers = [];
 
+
+
+function mouseMove(e){
+
+	var x = e.clientX ;
+	var y = e.clientY;
+
+
+
+	for(i = 0 ; i < shamblers.length ; i++){
+		updateShamblerDirection(i, x,y);
+	}
+
+}
+
+
+
 function init(){
 	width = window.innerWidth;
 	height = window.innerHeight;
@@ -13,7 +30,29 @@ function init(){
 
 	createTable();
 
-	addShamblers(50);
+	addShamblers(1);
+
+
+
+	document.getElementById('gameTable').addEventListener("mousemove", mouseMove);
+}
+
+function updateShamblerDirection(zIdx, lookAtX, lookAty){
+
+	var zx = shamblers[zIdx][0];
+	var zy = shamblers[zIdx][1];
+
+	var m = (zy-lookAty)/(zx-lookAtX);//TODO : check m & unit m first
+
+	var angleRadians = Math.atan(m);
+	var angle = angleRadians * (180 / Math.PI);
+
+	console.log("SHAMBLER : "+zx+";"+zy);
+	console.log("TARGET : "+lookAtX+";"+lookAty);
+	console.log("ANGLE : "+angle);
+	console.log("rads : "+angleRadians);
+
+	shamblers[zIdx][2].style.transform="rotate("+angle+"deg)";
 
 }
 
@@ -38,6 +77,7 @@ function addShamblers(nbZ){
 		iDiv.style.top=zY+"px";
 		iDiv.style.left=zX+"px";
 
+		shamblers[y] = [zX, zY, iDiv];
 
 		document.getElementsByTagName('body')[0].appendChild(iDiv);
 
