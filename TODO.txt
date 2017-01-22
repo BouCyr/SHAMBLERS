@@ -1,0 +1,7 @@
+[x]Display grid
+[]Display roads
+[]move grid
+
+[]display shamblers
+[]direct shamblers
+[]move shamblers

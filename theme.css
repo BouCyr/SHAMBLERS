@@ -1,0 +1,70 @@
+
+body{
+	background: #bbb;
+}
+
+.left{
+	position:absolute;
+	left:0px;
+	top:0px;
+    height: 100%;
+    width:100px;
+	background:rgba(0,0,0,0.5);
+}
+
+.top{
+	position:absolute;
+	left:100px;
+	top:0px;
+
+    height: 100px;
+	background:rgba(0,0,0,0.5);
+}
+
+.down{
+	position:absolute;
+	bottom:0px;
+	left:100px;
+
+    height: 100px;
+	background:rgba(0,0,0,0.5);
+}
+
+.right{
+	position:absolute;
+	right:0px;
+	top:0px;
+    height: 100%;
+    width:100px;
+	background:rgba(0,0,0,0.5);
+}
+
+.out{
+}
+
+#gameTable{
+	position:absolute;
+	top:100px;
+	left:100px;
+	border:1px solid red;
+	
+	opacity: 0.5;
+	border-collapse: collapse;
+	z-index: 0;
+}
+
+.gameCell{
+	width:80px;
+	height:80px;
+	border:1px solid blue;
+}
+
+.shambler{
+	position:absolute;
+
+	z-index: 500;
+	background-image: url("Z.png");
+	width:20px;
+	height: 20px;
+
+}
