@@ -10,15 +10,19 @@ var iDIV = 2;
 var iANGLE = 3;
 var iTGT = 4;
 var iSIDE = 5;
+var iSPEED = 6;
 
 var noGoZoneSize = 14; //no shambler can go this close of another shambler
 var NGSS= noGoZoneSize*noGoZoneSize;
 
-var SPEED = 50; //px per sec.
-var NB_SHAMBLERS = 100 ;
+var SPEED = 30; //px per sec.
+var J_SPEED_VARIANCE = 40; //between 0 and this will be added to the speed of each individual shamblers
+var NB_SHAMBLERS = 150 ;
 
 var SIDE_LEFT  = (0.5 * Math.PI)+(0.1 *Math.PI);
 var SIDE_RIGHT = (-0.5* Math.PI)+(-0.1*Math.PI);
+
+
 
 function mouseMove(e){
 
@@ -49,7 +53,7 @@ function init(){
 
 
 
-	document.getElementById('gameTable').addEventListener("mousemove", mouseMove);
+	document.getElementById('controlDiv').addEventListener("mousemove", mouseMove);
 
 	setInterval(update, 30);
 }
@@ -61,7 +65,25 @@ function update(){
 	t++;
 	document.getElementById('outTop').innerHTML = t;
 
-	for( zIdx = 0 ; zIdx < shamblers.length ; zIdx++){
+	var woken = Math.ceil(t / 5 );
+
+	//do not start all shamblers at the sime time
+	var maxUpdate = woken>shamblers.length?shamblers.length:woken; 
+
+	for( zIdx = 0 ; zIdx < maxUpdate ; zIdx++){
+
+
+		var ll = document.getElementById('z_leftLeg_'+zIdx);
+		if(!ll.classList.contains('walkLeft')){
+			ll.classList.add("walkLeft"); 
+		}
+	
+		var rl = document.getElementById('z_rightLeg_'+zIdx);
+		if(!rl.classList.contains('walkRight')){
+			rl.classList.add("walkRight"); 
+		}
+
+
 		var zx = shamblers[zIdx][iX];
 		var zy = shamblers[zIdx][iY];
 
@@ -80,8 +102,8 @@ function update(){
 		dirX = dirX/toTarget;
 		dirY = dirY/toTarget;
 
-		var moveX = SPEED*dirX*(30/1000);
-		var moveY = SPEED*dirY*(30/1000);
+		var moveX = shamblers[zIdx][iSPEED]*dirX*(30/1000);
+		var moveY = shamblers[zIdx][iSPEED]*dirY*(30/1000);
 
 		var newX = zx+moveX;
 		var newY = zy+moveY;
@@ -94,8 +116,8 @@ function update(){
 			//shambler is blocked ; try sideways ?	
 			var degrees= shamblers[zIdx][iSIDE];		
 			
-    		var sideX = zx + SPEED*(30/1000)*(dirX * Math.cos(degrees) - dirY * Math.sin(degrees));
-    		var sideY = zy + SPEED*(30/1000)*(dirX * Math.sin(degrees) + dirY * Math.cos(degrees));
+    		var sideX = zx + shamblers[zIdx][iSPEED]*(30/1000)*(dirX * Math.cos(degrees) - dirY * Math.sin(degrees));
+    		var sideY = zy + shamblers[zIdx][iSPEED]*(30/1000)*(dirX * Math.sin(degrees) + dirY * Math.cos(degrees));
 
     		if(!checkOtherShamblers(zIdx, sideX, sideY)){
     			newX = sideX;
@@ -107,8 +129,8 @@ function update(){
     			//try to change direction
     			degrees = (degrees >0 ? SIDE_RIGHT:SIDE_LEFT);
 
-    			sideX = zx + SPEED*(30/1000)*(dirX * Math.cos(degrees) - dirY * Math.sin(degrees));
-    		 	sideY = zy + SPEED*(30/1000)*(dirX * Math.sin(degrees) + dirY * Math.cos(degrees));
+    			sideX = zx + shamblers[zIdx][iSPEED]*(30/1000)*(dirX * Math.cos(degrees) - dirY * Math.sin(degrees));
+    		 	sideY = zy + shamblers[zIdx][iSPEED]*(30/1000)*(dirX * Math.sin(degrees) + dirY * Math.cos(degrees));
 
     			if(!checkOtherShamblers(zIdx, sideX, sideY)){
 	    			newX = sideX;
@@ -209,9 +231,30 @@ function addShamblers(nbZ){
 	for (y = 0; y < nbZ; y++) { 
 
 
+		var zX = Math.floor(Math.random()*50);
+		var zY = Math.floor(Math.random()*50);
 
-		var zX = 100 + Math.floor(tableWidth * Math.random());
-		var zY = 100 + Math.floor(tableHeight * Math.random());
+		var origin = Math.floor(Math.random()*4);
+
+		if(origin === 0){
+			//on the top side
+			zX = Math.floor(Math.random()*width);
+			zY = Math.floor(Math.random()*50);
+		}else if(origin === 1){
+			//on the right side
+			zX = width - Math.floor(Math.random()*50);
+			zY = Math.floor(Math.random()*height);
+		}else if(origin === 2){
+			//on the bottom side
+			zX = Math.floor(Math.random()*tableWidth);
+			zY = height - Math.floor(Math.random()*50);			
+		}else if(origin === 3){
+			//on the left side
+			zX = Math.floor(Math.random()*50);
+			zY = Math.floor(Math.random()*height);		
+		}
+
+		
 
 		if(checkOtherShamblers(999999, zX,zY)){
 			//another shambler is too near
@@ -219,11 +262,25 @@ function addShamblers(nbZ){
 			continue;
 		}
 
+		var zSpeed = SPEED + Math.ceil(Math.random()*J_SPEED_VARIANCE);
+
 		var iDiv = document.createElement('div');
 		iDiv.id = 'z'+y;
 		iDiv.className = 'shambler';
 		iDiv.style.top=zY-10+"px";
 		iDiv.style.left=zX-10+"px";
+
+		iDiv.appendChild(createPart('head',y));
+		iDiv.appendChild(createPart('torso',y));
+		iDiv.appendChild(createPart('arms'),y);
+
+		var ll = createPart('leftLeg',y);
+		//ll.classList.add("walkLeft"); WAIT UNITL THE SHAMBLERS WALK
+		iDiv.appendChild(ll);
+
+		var rl = createPart('rightLeg',y)
+		//rl.classList.add("walkRight"); WAIT UNITL THE SHAMBLERS WALK
+		iDiv.appendChild(rl);
 
 		var sideDirection = SIDE_LEFT;
 
@@ -231,11 +288,19 @@ function addShamblers(nbZ){
 			sideDirection = SIDE_RIGHT;			
 		}
 
-		shamblers[y] = [zX, zY, iDiv, 0, [0,0], sideDirection];
+		shamblers[y] = [zX, zY, iDiv, 0, [0,0], sideDirection, zSpeed];
 
 		document.getElementsByTagName('body')[0].appendChild(iDiv);
 
 	}
+}
+
+function createPart(cssClass, zindex){
+	var iDiv = document.createElement('div');
+	iDiv.id = 'z_'+cssClass+"_"+y;
+	iDiv.classList.add(cssClass);
+
+	return iDiv;
 }
 
 function createTable() {

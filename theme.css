@@ -1,6 +1,16 @@
 
 body{
 	background: #bbb;
+	overflow: hidden;
+}
+
+#controldiv{
+	width: 100%; 
+	height: 100%;
+	position: absolute; 
+	top: 0; 
+	left: 0;
+	z-index: 100000;
 }
 
 .left{
@@ -9,7 +19,8 @@ body{
 	top:0px;
     height: 100%;
     width:100px;
-	background:rgba(0,0,0,0.5);
+	background:rgba(0,0,0,1);
+	z-index:  99999;
 }
 
 .top{
@@ -18,7 +29,8 @@ body{
 	top:0px;
 
     height: 100px;
-	background:rgba(0,0,0,0.5);
+	background:rgba(0,0,0,1);
+	z-index:  99999;
 }
 
 .down{
@@ -27,7 +39,8 @@ body{
 	left:100px;
 
     height: 100px;
-	background:rgba(0,0,0,0.5);
+	background:rgba(0,0,0,1);
+	z-index:  99999;
 }
 
 .right{
@@ -36,7 +49,8 @@ body{
 	top:0px;
     height: 100%;
     width:100px;
-	background:rgba(0,0,0,0.5);
+	background:rgba(0,0,0,1);
+	z-index:  99999;
 }
 
 .out{
@@ -63,9 +77,67 @@ body{
 	position:absolute;
 
 	z-index: 500;
-	background-image: url("Z.png");
+	/*background-image: url("Z.png");*/
 	width:20px;
 	height: 20px;
-
 }
 
+.head{
+	z-index: 700;
+	position:absolute;
+	background-image: url("Zh.png");
+	width:20px;
+	height: 20px;
+}
+
+.torso{
+	z-index: 690;
+	position:absolute;
+	background-image: url("Zt.png");
+	width:20px;
+	height: 20px;
+}
+
+.arms{
+	z-index: 680;
+	position:absolute;
+	background-image: url("Za.png");
+	width:20px;
+	height: 20px;
+}
+.leftLeg{
+	z-index: 670;
+	position:absolute;
+	background-image: url("Zll.png");
+	width:20px;
+	height: 20px;
+}
+.rightLeg{
+	z-index: 670;
+	position:absolute;
+	background-image: url("Zrl.png");
+	width:20px;
+	height: 20px;
+}
+
+.walkLeft{
+	animation-name: WALK;
+    animation-duration: 0.5s;
+    animation-direction: alternate;
+    animation-iteration-count: infinite;
+}
+
+.walkRight{
+	animation-name: WALK;
+    animation-duration: 0.5s;
+    animation-delay: 0.5s;
+    animation-direction: alternate;
+    animation-iteration-count: infinite;
+}
+
+@keyframes WALK {
+    0%   {top:-5px;}
+    33%   {top:-4px;}
+    66%   {top:1px;}
+    100%  {top:2px;}
+}
