@@ -85,7 +85,6 @@ body{
 .head{
 	z-index: 700;
 	position:absolute;
-	background-image: url("Zh.png");
 	width:20px;
 	height: 20px;
 }
@@ -93,7 +92,6 @@ body{
 .torso{
 	z-index: 690;
 	position:absolute;
-	background-image: url("Zt.png");
 	width:20px;
 	height: 20px;
 }
@@ -101,21 +99,20 @@ body{
 .arms{
 	z-index: 680;
 	position:absolute;
-	background-image: url("Za.png");
 	width:20px;
 	height: 20px;
 }
 .leftLeg{
 	z-index: 670;
 	position:absolute;
-	background-image: url("Zll.png");
+	background-image: url("shamblers/ll.png");
 	width:20px;
 	height: 20px;
 }
 .rightLeg{
 	z-index: 670;
 	position:absolute;
-	background-image: url("Zrl.png");
+	background-image: url("shamblers/rl.png");
 	width:20px;
 	height: 20px;
 }
