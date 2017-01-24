@@ -16,8 +16,8 @@ var noGoZoneSize = 14; //no shambler can go this close of another shambler
 var NGSS= noGoZoneSize*noGoZoneSize;
 
 var SPEED = 30; //px per sec.
-var J_SPEED_VARIANCE = 40; //between 0 and this will be added to the speed of each individual shamblers
-var NB_SHAMBLERS = 150 ;
+var J_SPEED_VARIANCE = 20; //between 0 and this will be added to the speed of each individual shamblers
+var NB_SHAMBLERS = 200 ;
 
 var SIDE_LEFT  = (0.5 * Math.PI)+(0.1 *Math.PI);
 var SIDE_RIGHT = (-0.5* Math.PI)+(-0.1*Math.PI);
@@ -222,6 +222,12 @@ function updateShamblerDirection(zIdx, lookAtX, lookAty){
 
 }
 
+
+function addObstacle(){
+
+	
+}
+
 function addShamblers(nbZ){
 
 	var tableWidth = width -200;
@@ -270,16 +276,24 @@ function addShamblers(nbZ){
 		iDiv.style.top=zY-10+"px";
 		iDiv.style.left=zX-10+"px";
 
-		iDiv.appendChild(createPart('head',y));
-		iDiv.appendChild(createPart('torso',y));
-		iDiv.appendChild(createPart('arms'),y);
+		var skin = 1 + (y%7);
+
+		var head = createPart('head',y);
+		head.style.backgroundImage = 'url("shamblers/h.png")';
+		iDiv.appendChild(head);
+
+		var torso = createPart('torso',y);
+		torso.style.backgroundImage = 'url("shamblers/'+skin+'/t.png")';
+		iDiv.appendChild(torso);
+
+		var arms = createPart('arms',y);
+		arms.style.backgroundImage = 'url("shamblers/'+skin+'/a.png")';
+		iDiv.appendChild(arms);
 
 		var ll = createPart('leftLeg',y);
-		//ll.classList.add("walkLeft"); WAIT UNITL THE SHAMBLERS WALK
 		iDiv.appendChild(ll);
 
 		var rl = createPart('rightLeg',y)
-		//rl.classList.add("walkRight"); WAIT UNITL THE SHAMBLERS WALK
 		iDiv.appendChild(rl);
 
 		var sideDirection = SIDE_LEFT;
