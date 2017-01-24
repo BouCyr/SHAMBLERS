@@ -3,25 +3,21 @@ var height = 0;
 
 var shamblers = [];
 
+var obstacles = [];
+
 var FRAME_PERIOD = 45 ;
 
-var iX = 0;
-var iY = 1;
-var iDIV = 2;
-var iANGLE = 3;
-var iTGT = 4;
-var iSIDE = 5;
-var iSPEED = 6;
+
 
 var noGoZoneSize = 14; //no shambler can go this close of another shambler
 var NGSS= noGoZoneSize*noGoZoneSize;
 
-var SPEED = 30; //px per sec.
+var SPEED = 40; //px per sec.
 var J_SPEED_VARIANCE = 20; //between 0 and this will be added to the speed of each individual shamblers
 var NB_SHAMBLERS = 100 ;
 
-var SIDE_LEFT  = (0.5 * Math.PI)+(0.1 *Math.PI);
-var SIDE_RIGHT = (-0.5* Math.PI)+(-0.1*Math.PI);
+var SIDE_LEFT  = (0.5 * Math.PI)+(0.05 *Math.PI);
+var SIDE_RIGHT = (-0.5* Math.PI)+(-0.05*Math.PI);
 
 
 
@@ -32,7 +28,7 @@ function setTarget(e){
 
 
 
-	for(i = 0 ; i < shamblers.length ; i++){
+	for(var i = 0 ; i < shamblers.length ; i++){
 		updateShamblerTarget(i, x,y);
 	}
 
@@ -45,10 +41,13 @@ function init(){
 	height = window.innerHeight;
 	
 
-	document.getElementById('outTop').style.width=(width-200)+"px";
-	document.getElementById('outDown').style.width=(width-200)+"px";
+	//document.getElementById('outTop').style.width=(width-200)+"px";
+	//document.getElementById('outDown').style.width=(width-200)+"px";
 
 	createTable();
+
+	addObstacle(7,3);
+	addObstacle(2,2);
 
 	addShamblers(NB_SHAMBLERS);
 
@@ -64,14 +63,12 @@ var t = 0;
 function update(){
 
 	t++;
-	document.getElementById('outTop').innerHTML = t;
-
 	var woken = Math.ceil(t / 5 );
 
 	//do not start all shamblers at the sime time
 	var maxUpdate = woken>shamblers.length?shamblers.length:woken; 
 
-	for( zIdx = 0 ; zIdx < maxUpdate ; zIdx++){
+	for(var zIdx = 0 ; zIdx < maxUpdate ; zIdx++){
 
 
 		var ll = document.getElementById('z_leftLeg_'+zIdx);
@@ -85,11 +82,11 @@ function update(){
 		}
 
 
-		var zx = shamblers[zIdx][iX];
-		var zy = shamblers[zIdx][iY];
+		var zx = shamblers[zIdx].x;
+		var zy = shamblers[zIdx].y;
 
-		var targetX = shamblers[zIdx][iTGT][0];
-		var targetY = shamblers[zIdx][iTGT][1];
+		var targetX = shamblers[zIdx].target[0];
+		var targetY = shamblers[zIdx].target[1];
 
 		var dirX = targetX - zx;
 		var dirY = targetY - zy;
@@ -103,43 +100,45 @@ function update(){
 		dirX = dirX/toTarget;
 		dirY = dirY/toTarget;
 
-		var moveX = shamblers[zIdx][iSPEED]*dirX*(FRAME_PERIOD/1000);
-		var moveY = shamblers[zIdx][iSPEED]*dirY*(FRAME_PERIOD/1000);
+		var moveX = shamblers[zIdx].speed*dirX*(FRAME_PERIOD/1000);
+		var moveY = shamblers[zIdx].speed*dirY*(FRAME_PERIOD/1000);
 
 		var newX = zx+moveX;
 		var newY = zy+moveY;
 
 		//check obstacles
-		var blocked = checkOtherShamblers(zIdx, newX, newY);
+		var blocked = checkIfDirectionBlocked(zIdx, newX, newY);
 
 		
 		if(blocked){
 			//shambler is blocked ; try sideways ?	
-			var degrees= shamblers[zIdx][iSIDE];		
+			var degrees= shamblers[zIdx].side;		
 			
-    		var sideX = zx + shamblers[zIdx][iSPEED]*(FRAME_PERIOD/1000)*(dirX * Math.cos(degrees) - dirY * Math.sin(degrees));
-    		var sideY = zy + shamblers[zIdx][iSPEED]*(FRAME_PERIOD/1000)*(dirX * Math.sin(degrees) + dirY * Math.cos(degrees));
+			//speed halved when going sideways
+    		var sideX = zx + 0.5*shamblers[zIdx].speed*(FRAME_PERIOD/1000)*(dirX * Math.cos(degrees) - dirY * Math.sin(degrees));
+    		var sideY = zy + 0.5*shamblers[zIdx].speed*(FRAME_PERIOD/1000)*(dirX * Math.sin(degrees) + dirY * Math.cos(degrees));
 
-    		if(!checkOtherShamblers(zIdx, sideX, sideY)){
+    		if(!checkIfDirectionBlocked(zIdx, sideX, sideY)){
     			newX = sideX;
     			newY = sideY;
-				updateShamblerTarget(zIdx, shamblers[zIdx][iTGT][0],  shamblers[zIdx][iTGT][1]);
+				updateShamblerTarget(zIdx, shamblers[zIdx].target[0],  shamblers[zIdx].target[1]);
 
     		}else{
     			
     			//try to change direction
     			degrees = (degrees >0 ? SIDE_RIGHT:SIDE_LEFT);
 
-    			sideX = zx + shamblers[zIdx][iSPEED]*(FRAME_PERIOD/1000)*(dirX * Math.cos(degrees) - dirY * Math.sin(degrees));
-    		 	sideY = zy + shamblers[zIdx][iSPEED]*(FRAME_PERIOD/1000)*(dirX * Math.sin(degrees) + dirY * Math.cos(degrees));
+    			//speed halved when going sideways
+    			sideX = zx + 0.5*shamblers[zIdx].speed*(FRAME_PERIOD/1000)*(dirX * Math.cos(degrees) - dirY * Math.sin(degrees));
+    		 	sideY = zy + 0.5*shamblers[zIdx].speed*(FRAME_PERIOD/1000)*(dirX * Math.sin(degrees) + dirY * Math.cos(degrees));
 
-    			if(!checkOtherShamblers(zIdx, sideX, sideY)){
+    			if(!checkIfDirectionBlocked(zIdx, sideX, sideY)){
 	    			newX = sideX;
 	    			newY = sideY;
-	    			updateShamblerTarget(zIdx, shamblers[zIdx][iTGT][0],  shamblers[zIdx][iTGT][1]);
+	    			updateShamblerTarget(zIdx, shamblers[zIdx].target[0],  shamblers[zIdx].target[1]);
 
 	    			//this direction is free ; next loop, try this one first.
-	    			shamblers[zIdx][iSIDE] = degrees;
+	    			shamblers[zIdx].side = degrees;
 
     			}
     			else{
@@ -151,48 +150,33 @@ function update(){
 		}
 
 
-		shamblers[zIdx][iX] = newX;
-		shamblers[zIdx][iY] = newY;
+		shamblers[zIdx].x = newX;
+		shamblers[zIdx].y = newY;
 
 
-		var zDiv = shamblers[zIdx][iDIV] ;
-		zDiv.style.top=(shamblers[zIdx][iY]-10)+"px";
-		zDiv.style.left=(shamblers[zIdx][iX]-10)+"px";
+		var zDiv = shamblers[zIdx].element ;
+		zDiv.style.left=(shamblers[zIdx].x-10)+"px";
+		zDiv.style.top=(shamblers[zIdx].y-10)+"px";
 	}
 
 }
 
-function checkOtherShamblers(zIdx, zx, zy){
-
-	//other shamblers
-	for( ozIdx = 0 ; ozIdx < shamblers.length ; ozIdx++){
-		if(ozIdx === zIdx){
-			continue; // the shambler should not block himself...
-		}
-
-		var ozx = shamblers[ozIdx][iX];
-		var ozy = shamblers[ozIdx][iY];
-
-		var dZOSquare = (ozx - zx)*(ozx - zx) + (ozy - zy)*(ozy - zy);
+function checkIfDirectionBlocked(zIdx, zx, zy){
 
 
-		//if (zx > ozx-noGoZoneSize && zx < ozx + noGoZoneSize 
-		//	&&
-		//	zy > ozy-noGoZoneSize && zy < ozy + noGoZoneSize ){
-		if(dZOSquare < NGSS){
-
-			//shambler is about to enter another Z no go zone
+	for(var o = 0 ; o < obstacles.length ; o++){
+		if(obstacles[o].block(zx,zy, zIdx)){
 			return true;
 		}
 	}
 	return false;
-
 }
+
 
 function updateShamblerTarget(zIdx, lookAtX, lookAty){
 
-	var zx = shamblers[zIdx][iX];
-	var zy = shamblers[zIdx][iY];
+	var zx = shamblers[zIdx].x;
+	var zy = shamblers[zIdx].y;
 
 
 	var vx = zx - lookAtX;
@@ -216,55 +200,49 @@ function updateShamblerTarget(zIdx, lookAtX, lookAty){
 	}
 
 
-	shamblers[zIdx][iANGLE] = angle;
-	shamblers[zIdx][iTGT][0] = lookAtX;
-	shamblers[zIdx][iTGT][1] = lookAty;
+	shamblers[zIdx].angle = angle;
+	shamblers[zIdx].target[0] = lookAtX;
+	shamblers[zIdx].target[1] = lookAty;
 
-	shamblers[zIdx][iDIV].style.transform="rotate("+angle+"deg)";
+	shamblers[zIdx].element.style.transform="rotate("+angle+"deg)";
 
 }
 
-
-function addObstacle(){
-
-	
-}
 
 function addShamblers(nbZ){
 
-	var tableWidth = width -200;
-	var tableHeight = height - 200;
+	var tableWidth = width ;//-200;
+	var tableHeight = height ;//- 200;
 
 
-	for (y = 0; y < nbZ; y++) { 
-
+	for (var y = 0; y < nbZ; y++) { 
 
 		var zX = Math.floor(Math.random()*50);
 		var zY = Math.floor(Math.random()*50);
 
 		var origin = Math.floor(Math.random()*4);
 
+
 		if(origin === 0){
 			//on the top side
 			zX = Math.floor(Math.random()*width);
-			zY = Math.floor(Math.random()*50);
+			zY =-30-1*Math.floor(Math.random()*50);
 		}else if(origin === 1){
 			//on the right side
-			zX = width - Math.floor(Math.random()*50);
+			zX = width +30+ Math.floor(Math.random()*50);
 			zY = Math.floor(Math.random()*height);
 		}else if(origin === 2){
 			//on the bottom side
 			zX = Math.floor(Math.random()*tableWidth);
-			zY = height - Math.floor(Math.random()*50);			
+			zY = height +30 + Math.floor(Math.random()*50);			
 		}else if(origin === 3){
 			//on the left side
-			zX = Math.floor(Math.random()*50);
+			zX = -30 - Math.floor(Math.random()*50);
 			zY = Math.floor(Math.random()*height);		
 		}
-
 		
 
-		if(checkOtherShamblers(999999, zX,zY)){
+		if(checkIfDirectionBlocked(999999, zX,zY)){
 			//another shambler is too near
 			y--;
 			continue;
@@ -304,7 +282,26 @@ function addShamblers(nbZ){
 			sideDirection = SIDE_RIGHT;			
 		}
 
-		shamblers[y] = [zX, zY, iDiv, 0, [0,0], sideDirection, zSpeed];
+		shamblers[y] = {
+			index:y,
+			x:zX,
+			y:zY,
+			element:iDiv,
+			angle:0, 
+			target:[0,0], 
+			side:sideDirection, 
+			speed:zSpeed,
+			block:function(zx,zy,indexMover){
+				if(this.index === indexMover){
+					//shamblers should not block himself...
+					return false;
+				}
+				var distanceSquare = (this.x - zx)*(this.x - zx) + (this.y - zy)*(this.y - zy);
+
+				return (distanceSquare < NGSS);
+			}
+		}
+		obstacles.push(shamblers[y]);
 
 		document.getElementsByTagName('body')[0].appendChild(iDiv);
 
@@ -313,43 +310,61 @@ function addShamblers(nbZ){
 
 function createPart(cssClass, zindex){
 	var iDiv = document.createElement('div');
-	iDiv.id = 'z_'+cssClass+"_"+y;
+	iDiv.id = 'z_'+cssClass+"_"+zindex;
 	iDiv.classList.add(cssClass);
 
 	return iDiv;
 }
 
+function addObstacle(cellX, cellY){
+	var floorDiv = document.createElement('img');
+	floorDiv.classList.add("ground");
+	floorDiv.src = 'GROUND.png';
+
+	var roofDiv = document.createElement('div');
+	roofDiv.classList.add("roof");
+	roofDiv.style.backgroundImage = 'url("ROOF.png")';
+
+
+	cell = document.getElementById("cell"+cellX+"_"+cellY);
+	cell.appendChild(floorDiv);
+	cell.appendChild(roofDiv);
+
+
+
+	obstacles.push( {
+		cell:cell, 
+		x : cellX*80, 
+		y : cellY*80, 
+		width:80, 
+		height:80,
+		block:function(tgtx,tgty,indexMover) {
+       		return (tgty  > this.y && tgty < (this.y+this.height))
+       			&&
+       				(tgtx  > this.x && tgtx < (this.x+this.width))
+    		} 
+    	});
+}
+
 function createTable() {
-	var tableWidth = width -200;
-	var tableHeight = height - 200;
+	var tableWidth = width;// -200;
+	var tableHeight = height;// - 200;
 
 	var nbCellsW = Math.floor(tableWidth / 80);
 	var nbCellsH = Math.ceil(tableHeight / 80);
 
 	var table = document.getElementById("gameTable");
 
-	for (y = 0; y < nbCellsH; y++) { 
+	for (var y = 0; y < nbCellsH; y++) { 
 		var row = table.insertRow(y);
 
-		for (x = 0; x < nbCellsW; x++) { 
+		for (var x = 0; x < nbCellsW; x++) { 
+
 			var cell = row.insertCell(x);
+
 			cell.id="cell"+x+"_"+y;
 			cell.className="gameCell";
-			
 
-			if(x === 7 && y === 3){
-				//house
-				var floorDiv = document.createElement('img');
-				floorDiv.classList.add("ground");
-				floorDiv.src = 'GROUND.png';
-
-				var roofDiv = document.createElement('div');
-				roofDiv.classList.add("roof");
-				roofDiv.style.backgroundImage = 'url("ROOF.png")';
-
-				cell.appendChild(floorDiv);
-				cell.appendChild(roofDiv);
-			}
 		}
 
 	}

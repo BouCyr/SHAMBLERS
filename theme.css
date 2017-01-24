@@ -58,8 +58,8 @@ body{
 
 #gameTable{
 	position:absolute;
-	top:100px;
-	left:100px;
+	top:0px;
+	left:0px;
 	border:1px solid red;
 	
 	border-collapse: collapse;
