@@ -5,4 +5,6 @@
 [x]display shamblers
 [x]direct shamblers
 [x]move shamblers
-[ ]animate shamblers
+[x]animate shamblers
+
+[ ]Obstacle
