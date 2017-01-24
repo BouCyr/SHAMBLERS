@@ -17,7 +17,7 @@ var NGSS= noGoZoneSize*noGoZoneSize;
 
 var SPEED = 30; //px per sec.
 var J_SPEED_VARIANCE = 20; //between 0 and this will be added to the speed of each individual shamblers
-var NB_SHAMBLERS = 200 ;
+var NB_SHAMBLERS = 50 ;
 
 var SIDE_LEFT  = (0.5 * Math.PI)+(0.1 *Math.PI);
 var SIDE_RIGHT = (-0.5* Math.PI)+(-0.1*Math.PI);
@@ -331,7 +331,23 @@ function createTable() {
 
 		for (x = 0; x < nbCellsW; x++) { 
 			var cell = row.insertCell(x);
+			cell.id="cell"+x+"_"+y;
 			cell.className="gameCell";
+			
+
+			if(x === 7 && y === 3){
+				//house
+				var floorDiv = document.createElement('img');
+				floorDiv.classList.add("ground");
+				floorDiv.src = 'GROUND.png';
+
+				var roofDiv = document.createElement('div');
+				roofDiv.classList.add("roof");
+				roofDiv.style.backgroundImage = 'url("ROOF.png")';
+
+				cell.appendChild(floorDiv);
+				cell.appendChild(roofDiv);
+			}
 		}
 
 	}

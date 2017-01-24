@@ -1,6 +1,6 @@
 
 body{
-	background: #bbb;
+	background: #5ca911;
 	overflow: hidden;
 }
 
@@ -62,7 +62,6 @@ body{
 	left:100px;
 	border:1px solid red;
 	
-	opacity: 0.5;
 	border-collapse: collapse;
 	z-index: 0;
 }
@@ -70,7 +69,8 @@ body{
 .gameCell{
 	width:80px;
 	height:80px;
-	border:1px solid blue;
+	border:1px solid green;
+	position: relative;
 }
 
 .shambler{
@@ -137,4 +137,21 @@ body{
     33%   {top:-4px;}
     66%   {top:1px;}
     100%  {top:2px;}
+}
+
+.roof{
+	position:absolute;
+	top:0;
+	width:80px;
+	height:80px;
+	transition: opacity 1s;
+
+	z-index: 100001;
+}
+
+.roof:hover{
+	opacity:0;
+}
+
+.ground{
 }
