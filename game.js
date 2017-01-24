@@ -3,6 +3,7 @@ var height = 0;
 
 var shamblers = [];
 
+var FRAME_PERIOD = 45 ;
 
 var iX = 0;
 var iY = 1;
@@ -17,14 +18,14 @@ var NGSS= noGoZoneSize*noGoZoneSize;
 
 var SPEED = 30; //px per sec.
 var J_SPEED_VARIANCE = 20; //between 0 and this will be added to the speed of each individual shamblers
-var NB_SHAMBLERS = 50 ;
+var NB_SHAMBLERS = 100 ;
 
 var SIDE_LEFT  = (0.5 * Math.PI)+(0.1 *Math.PI);
 var SIDE_RIGHT = (-0.5* Math.PI)+(-0.1*Math.PI);
 
 
 
-function mouseMove(e){
+function setTarget(e){
 
 	var x = e.clientX ;
 	var y = e.clientY;
@@ -32,7 +33,7 @@ function mouseMove(e){
 
 
 	for(i = 0 ; i < shamblers.length ; i++){
-		updateShamblerDirection(i, x,y);
+		updateShamblerTarget(i, x,y);
 	}
 
 }
@@ -53,9 +54,9 @@ function init(){
 
 
 
-	document.getElementById('controlDiv').addEventListener("mousemove", mouseMove);
+	document.getElementById('gameTable').addEventListener("click", setTarget);
 
-	setInterval(update, 30);
+	setInterval(update, FRAME_PERIOD);
 }
 
 var t = 0;
@@ -102,8 +103,8 @@ function update(){
 		dirX = dirX/toTarget;
 		dirY = dirY/toTarget;
 
-		var moveX = shamblers[zIdx][iSPEED]*dirX*(30/1000);
-		var moveY = shamblers[zIdx][iSPEED]*dirY*(30/1000);
+		var moveX = shamblers[zIdx][iSPEED]*dirX*(FRAME_PERIOD/1000);
+		var moveY = shamblers[zIdx][iSPEED]*dirY*(FRAME_PERIOD/1000);
 
 		var newX = zx+moveX;
 		var newY = zy+moveY;
@@ -116,26 +117,26 @@ function update(){
 			//shambler is blocked ; try sideways ?	
 			var degrees= shamblers[zIdx][iSIDE];		
 			
-    		var sideX = zx + shamblers[zIdx][iSPEED]*(30/1000)*(dirX * Math.cos(degrees) - dirY * Math.sin(degrees));
-    		var sideY = zy + shamblers[zIdx][iSPEED]*(30/1000)*(dirX * Math.sin(degrees) + dirY * Math.cos(degrees));
+    		var sideX = zx + shamblers[zIdx][iSPEED]*(FRAME_PERIOD/1000)*(dirX * Math.cos(degrees) - dirY * Math.sin(degrees));
+    		var sideY = zy + shamblers[zIdx][iSPEED]*(FRAME_PERIOD/1000)*(dirX * Math.sin(degrees) + dirY * Math.cos(degrees));
 
     		if(!checkOtherShamblers(zIdx, sideX, sideY)){
     			newX = sideX;
     			newY = sideY;
-				updateShamblerDirection(zIdx, shamblers[zIdx][iTGT][0],  shamblers[zIdx][iTGT][1]);
+				updateShamblerTarget(zIdx, shamblers[zIdx][iTGT][0],  shamblers[zIdx][iTGT][1]);
 
     		}else{
     			
     			//try to change direction
     			degrees = (degrees >0 ? SIDE_RIGHT:SIDE_LEFT);
 
-    			sideX = zx + shamblers[zIdx][iSPEED]*(30/1000)*(dirX * Math.cos(degrees) - dirY * Math.sin(degrees));
-    		 	sideY = zy + shamblers[zIdx][iSPEED]*(30/1000)*(dirX * Math.sin(degrees) + dirY * Math.cos(degrees));
+    			sideX = zx + shamblers[zIdx][iSPEED]*(FRAME_PERIOD/1000)*(dirX * Math.cos(degrees) - dirY * Math.sin(degrees));
+    		 	sideY = zy + shamblers[zIdx][iSPEED]*(FRAME_PERIOD/1000)*(dirX * Math.sin(degrees) + dirY * Math.cos(degrees));
 
     			if(!checkOtherShamblers(zIdx, sideX, sideY)){
 	    			newX = sideX;
 	    			newY = sideY;
-	    			updateShamblerDirection(zIdx, shamblers[zIdx][iTGT][0],  shamblers[zIdx][iTGT][1]);
+	    			updateShamblerTarget(zIdx, shamblers[zIdx][iTGT][0],  shamblers[zIdx][iTGT][1]);
 
 	    			//this direction is free ; next loop, try this one first.
 	    			shamblers[zIdx][iSIDE] = degrees;
@@ -162,6 +163,7 @@ function update(){
 }
 
 function checkOtherShamblers(zIdx, zx, zy){
+
 	//other shamblers
 	for( ozIdx = 0 ; ozIdx < shamblers.length ; ozIdx++){
 		if(ozIdx === zIdx){
@@ -187,7 +189,7 @@ function checkOtherShamblers(zIdx, zx, zy){
 
 }
 
-function updateShamblerDirection(zIdx, lookAtX, lookAty){
+function updateShamblerTarget(zIdx, lookAtX, lookAty){
 
 	var zx = shamblers[zIdx][iX];
 	var zy = shamblers[zIdx][iY];
