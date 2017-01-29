@@ -1,0 +1,12 @@
+[x]Display grid
+[ ]Display roads
+[ ]move grid
+
+[x]display shamblers
+[x]direct shamblers
+[x]move shamblers
+[x]animate shamblers
+
+[x]Obstacle
+
+[ ]Service workers
