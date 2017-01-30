@@ -9,6 +9,8 @@ public class Building implements Obstacle, Serializable{
 
 	private static final long serialVersionUID = -90917557552589733L;
 	
+	private int id;
+	
 	private int topLeftX;
 	private int topLeftY;
 
@@ -19,8 +21,9 @@ public class Building implements Obstacle, Serializable{
 
 
 
-	public Building(int topLeftX, int topLeftY, int width, int height, int skin) {
+	public Building(int id, int topLeftX, int topLeftY, int width, int height, int skin) {
 		super();
+		this.id = id;
 		this.topLeftX = topLeftX;
 		this.topLeftY = topLeftY;
 		this.width = width;
@@ -85,6 +88,16 @@ public class Building implements Obstacle, Serializable{
 
 	public void setSkin(int skin) {
 		this.skin = skin;
+	}
+
+
+	public int getId() {
+		return id;
+	}
+
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 

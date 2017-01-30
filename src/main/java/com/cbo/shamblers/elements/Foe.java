@@ -32,7 +32,7 @@ public class Foe extends Point implements HasCoord, Obstacle, Serializable{
 	
 	
 	public Foe(Integer id, int angle, HasCoord point, double zSpeed, double sideDirection, int skin) {
-		super();
+		super(point.getX(), point.getY());
 		this.id = id;
 		this.angle = angle;
 		this.target = point;

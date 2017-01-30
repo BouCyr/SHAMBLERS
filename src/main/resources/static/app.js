@@ -1,3 +1,5 @@
+
+
 var stompClient = null;
 
 function setConnected(connected) {
@@ -13,18 +15,28 @@ function setConnected(connected) {
 }
 
 function connect() {
-    var socket = new SockJS('/gs-guide-websocket');
+    var socket = new SockJS('/game');
     stompClient = Stomp.over(socket);
+    stompClient.debug = null;
     stompClient.connect({}, 
     	function (frame) {
 	        setConnected(true);
 	        console.log('Connected: ' + frame);
-	        stompClient.subscribe('/topic/greetings', function (greeting) {
+	        stompClient.subscribe('/topic/status', function (greeting) {
 	        	
 	        	var content = JSON.parse(greeting.body);
 	
-	        	var firstfromServer = content.foes[0];
-	        	var first = shamblers[0];
+	        	
+	        	for(var z = 0; z < content.foes.length ; z++){
+	        		var shambler = content.foes[z];
+	        		addOrUpdateShambler(shambler);
+	        		}
+	        	
+	        	for(var o = 0; o < content.buildings.length ; o++){
+	        		var obstacle = content.buildings[o];
+	        		addOrUpdateObstacle(obstacle);
+	        		}
+	        	
 	        	});
     		},
     	function (message){

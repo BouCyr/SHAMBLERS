@@ -25,7 +25,7 @@ public class Runner {
 		g.create();
 	}
 	
-	@Scheduled(fixedRate=1000)
+	@Scheduled(fixedRate=30)
 	public void runUpdate(){
 		
 		
@@ -37,10 +37,10 @@ public class Runner {
 		
 		GameStatus status = g.getStatus();
 		long ellapsed = (System.nanoTime() - nanoTime)/(1000);
-		System.out.println("STATUS : "+ellapsed+"µs");
+		//System.out.println("STATUS : "+ellapsed+"µs");
 		sockets.fireSatus(status);
 		
 		ellapsed = (System.nanoTime() - nanoTime)/(1000);
-		System.out.println("STATUS & SEND: "+ellapsed+"µs");
+		//System.out.println("STATUS & SEND: "+ellapsed+"µs");
 	}
 }

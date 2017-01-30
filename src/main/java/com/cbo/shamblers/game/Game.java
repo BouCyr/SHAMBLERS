@@ -50,12 +50,30 @@ public class Game {
 
 
 		Random r = new Random();
+		
+		{
+			int skin = 1 ;
+			
+			Building b = new Building(1, 3*80, 3*80, 80,80,skin);
+			obstacles.add(b);
+			buildings.add(b);
+		}
+		
+		{
+			int skin = 2 ;
+			
+			Building b = new Building(2, 7*80, 5*80, 80,80,skin);
+			obstacles.add(b);
+			buildings.add(b);
+		}
+		
+		
 		for (int y = 0; y < NB_SHAMBLERS; y++) { 
 
 			int zX = r.nextInt(tableWidth);
 			int zY = r.nextInt(tableHeight);
 
-			if(checkIfDirectionBlocked(new Foe(0, 0, new Point(), 0, 0, 0), zX,zY)){
+			if(checkIfDirectionBlocked(new Foe(0, 0, new Point(zX,zY), 0, 0, 0), zX,zY)){
 				//another shambler is too near
 				y--;
 				continue;
@@ -71,25 +89,14 @@ public class Game {
 				sideDirection = SIDE_RIGHT;			
 			}
 
-			Foe shambler = new Foe(y, r.nextInt(360), new Point(), zSpeed, sideDirection, skin);
-			shambler.setX(zX);
-			shambler.setY(zY);
+			Foe shambler = new Foe(y, r.nextInt(360), new Point(zX, zY), zSpeed, sideDirection, skin);
+			shambler.updateTarget(new Point(300, 300));
 			obstacles.add(shambler);
 			shamblers.add(shambler);
 
 		}
 		
-		{
-			Building b = new Building(3*80, 3*80, 80,80,1);
-			obstacles.add(b);
-			buildings.add(b);
-		}
-		
-		{
-			Building b = new Building(7*80, 5*80, 80,80,1);
-			obstacles.add(b);
-			buildings.add(b);
-		}
+
 	}
 	
 	

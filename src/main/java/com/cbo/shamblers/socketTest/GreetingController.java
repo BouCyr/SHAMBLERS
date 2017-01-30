@@ -17,7 +17,7 @@ public class GreetingController {
 	private SimpMessagingTemplate template;
 
 	@MessageMapping("/hello")
-	@SendTo("/topic/greetings")
+	@SendTo("/topic/status")
 	public Greeting greeting(HelloMessage message) throws Exception {
 
 		return new Greeting("Hello, " + message.getName() + "! Here time is "+new Date().toString());
@@ -26,13 +26,13 @@ public class GreetingController {
 	
 	private int t = 0;
 	public void fireGreeting() {
-		this.template.convertAndSend("/topic/greetings",
+		this.template.convertAndSend("/topic/status",
 				new Greeting("SERVER time : "+new Date().toString()+", "+(t++) ));
 	}
 	
 	int count = 0;
 	public void fireSatus(GameStatus status){
-		this.template.convertAndSend("/topic/greetings",status);
+		this.template.convertAndSend("/topic/status",status);
 		
 		//this.template.convertAndSend("/topic/greetings",count++);
 	}

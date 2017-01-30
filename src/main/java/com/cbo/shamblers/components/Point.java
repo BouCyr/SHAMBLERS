@@ -11,6 +11,10 @@ public class Point implements HasCoord{
 	private double x;
 	private double y;
 
+	public Point(double i, double j) {
+		x=i;
+		y=j;
+	}
 	public double getX() {
 		return x;
 	}
@@ -24,6 +28,10 @@ public class Point implements HasCoord{
 		this.y = y;
 	}
 
+	public void set(double x, double y){
+		this.x= x;
+		this.y = y;
+	}
 
 
 
